@@ -12,7 +12,7 @@ public class Main {
             int d = Integer.parseInt(line[1]);
 
             if(d < 0) d += 360;
-            d /= 45;
+            d = (Math.abs(d)%360)/45;
 
             int[][] arr = new int[n][n];
             int[][] copiedArr = new int[n][n];
