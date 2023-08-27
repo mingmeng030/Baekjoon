@@ -1,24 +1,21 @@
 import java.io.*;
 
 public class Main {
-    static int n, d;
-    static int[][] arr, copiedArr;
     public static void main(String[] args) throws NumberFormatException, IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringBuilder sb = new StringBuilder();
-
         int T = Integer.parseInt(br.readLine());
         
         while(T -- > 0){
             String[] line = br.readLine().split(" ");
-            n = Integer.parseInt(line[0]);
-            d = Integer.parseInt(line[1]);
+            int n = Integer.parseInt(line[0]);
+            int d = Integer.parseInt(line[1]);
 
             if(d < 0) d += 360;
             d /= 45;
 
-            arr = new int[n][n];
-            copiedArr = new int[n][n];
+            int[][] arr = new int[n][n];
+            int[][] copiedArr = new int[n][n];
             
             for(int i = 0 ; i < n ; i++){
                 String[] num = br.readLine().split(" ");
@@ -42,10 +39,9 @@ public class Main {
                     }
                 }
             }
-
             for(int[] row : arr){
-                for(int n : row)
-                    sb.append(n + " ");
+                for(int col : row)
+                    sb.append(col + " ");
                 sb.append("\n");
             }
         }
