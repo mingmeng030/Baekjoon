@@ -3,102 +3,94 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.StringTokenizer;
 
 public class Main {
-	static int[][] graph;
-	static boolean[][] visited;
-	static int N;
-	static int M;
-	static int[] dy = {-1, 1, 0, 0};
-	static int[] dx = {0, 0, -1, 1};
-	
-	
-	static void bfs(int i, int j) {
-		visited[i][j] = true;
-		Queue<int[]> q = new LinkedList<>();
-		q.offer(new int[] {i, j});
-		while(!q.isEmpty()) {
-			int y = q.peek()[0];
-			int x = q.peek()[1];
-			q.poll();
-			for(int l=0; l<4; l++) {
-				int yy = y + dy[l];
-				int xx = x + dx[l];
-				if(yy>=0 && yy<N && xx >=0 && xx<M) {
-					if(graph[yy][xx] > 0 && !visited[yy][xx]){
-						q.offer(new int[] {yy, xx});
-						visited[yy][xx] = true;
-					}
-				}
-			}
-		}
+	static int[][] iceberg;
+	static boolean[][] check;
+	static int n,m;
+	static int[] dx = {-1, 1, 0, 0};
+	static int[] dy = {0, 0, -1, 1};
 		
-	}
-	
 	public static void main(String[] args) throws IOException {
-		// TODO Auto-generated method stub
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st = new StringTokenizer(br.readLine());
-		N = Integer.parseInt(st.nextToken());
-		M = Integer.parseInt(st.nextToken());
-		graph = new int[N][M]; // 빙산
-		
-		int yearCnt = 0; // 년
-		
-		// 빙산 입력받기
-		for(int i=0; i<N; i++) {
-			st = new StringTokenizer(br.readLine(), " ");
-			for(int j=0; j<M; j++) {
-				graph[i][j] = Integer.parseInt(st.nextToken());
-			}
+        String[] line = br.readLine().split(" ");
+        n = Integer.parseInt(line[0]);
+		m = Integer.parseInt(line[1]);
+		iceberg = new int[n][m]; 
+        
+		for(int i = 0; i<n; i++){
+            line = br.readLine().split(" ");
+            for(int j = 0; j<m; j++){
+                iceberg[i][j] = Integer.parseInt(line[j]);
+            }
 		}
 		
-
-		boolean flag = true; //빙산이 다 녹을 때까지 분리되지 않은 경우를 위한 플래그
+        // 빙산이 다 녹았다면 false
+        // 하나라도 빙산이 있다면 true
+		boolean flag = true; 
+        int year = 0;
+        
 		while(flag) {
-			int cnt = 0;
-			visited = new boolean[N][M];
-			flag = false; // 이중for문을 돌고 빙산이 다 녹았다면 false가 유지, 반복문을 돌다가 하나라도 빙산이 있다면 true
-			for (int i=0; i<N; i++) {
-				for(int j=0; j<M; j++) {
-					if(graph[i][j] > 0 && !visited[i][j]) {
+			int count = 0;
+			check = new boolean[n][m];
+			flag = false; 
+			for (int i=0; i<n; i++) {
+				for(int j=0; j<m; j++) {
+					if(iceberg[i][j] > 0 && !check[i][j]) {
 						flag=true;
 						bfs(i, j);
-						cnt++;
+						count++;
 					}
 				}
 			}
 			
-			// 빙산이 두덩어리 이상으로 나눠진 경우
-			if(cnt >= 2) {
-				System.out.println(yearCnt);
+			if(count >= 2) {
+				System.out.println(year);
 				break;
 			}
 			
-			// 빙산 녹이기
-			int[][] updateGraph = new int[N][M]; // 업데이트 될 빙산
-			for(int i=0; i<N; i++) {
-				for(int j=0; j<M; j++) {
-					if(graph[i][j] > 0) {
-						int zeroCnt = 0; // 주변 빈공간
-						for(int l=0; l<4; l++) {
-							int yy = dy[l] + i;
-							int xx = dx[l] + j;
-							if(graph[yy][xx] == 0) zeroCnt+=1;
+			int[][] nextIceberg = new int[n][m];
+			for(int i=0; i<n; i++) {
+				for(int j=0; j<m; j++) {
+					if(iceberg[i][j] > 0) {
+						int seaCount = 0;
+						for(int k=0; k<4; k++) {
+							int nowX = dx[k] + i;
+							int nowY = dy[k] + j;
+							if(iceberg[nowX][nowY] == 0) seaCount++;
 						}
-						int update = graph[i][j] - zeroCnt; // 음수일 경우에는 '0'으로 맞춰주기 
+						int update = iceberg[i][j]-seaCount;
 						if(update <= 0) update = 0;
-						updateGraph[i][j] = update;
+						nextIceberg[i][j] = update;
 					}
 				}
 			}
-			yearCnt+=1; //녹이고 난 뒤에 1년 추가
-			graph = updateGraph.clone(); 
-		}//while 종료
-
-		if(!flag) System.out.println(0);
-		
-		
+			year++;
+			iceberg = nextIceberg.clone(); 
+		}
+		if(!flag) System.out.println(0);	
+	}
+    
+    static void bfs(int x, int y) {
+		Queue<int[]> queue = new LinkedList<>();
+		queue.offer(new int[] {x,y});
+        check[x][y] = true;
+        
+		while(!queue.isEmpty()) {
+            int[] now = queue.poll();
+			int nowX = now[0];
+			int nowY = now[1];
+			
+			for(int k=0; k<4; k++) {
+				int nextY = nowY + dy[k];
+				int nextX = nowX + dx[k];
+				if(nextY>=0 && nextY<m && nextX >=0 && nextX<n) {
+					if(iceberg[nextX][nextY] > 0 && !check[nextX][nextY]){
+						queue.offer(new int[] {nextX,nextY});
+						check[nextX][nextY] = true;
+					}
+				}
+			}
+		}
 	}
 }
