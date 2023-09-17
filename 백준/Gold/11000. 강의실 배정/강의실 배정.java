@@ -1,29 +1,41 @@
 import java.util.*;
 import java.io.*;
+class Main {
 
-public class Main {
+    static int N;
+    static int[][] classes;
+
     public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int n = Integer.parseInt(br.readLine());
-        int[][] classes = new int[n][2];
-        
-        for (int i = 0; i < n; i++) {
-            String[] line = br.readLine().split(" ");
-            classes[i][0] = Integer.parseInt(line[0]);
-            classes[i][1] = Integer.parseInt(line[1]);
-        }        
 
-        Arrays.sort(classes, (o1, o2) -> {
-            return o1[0]-o2[0]; 
-        });
-        
-        PriorityQueue<Integer> pq = new PriorityQueue<>(); 
-        pq.offer(classes[0][1]);
+        inputData();
 
-        for (int i = 1; i < n; i++) {
-            if (pq.peek() <= classes[i][0]) pq.poll();
-            pq.offer(classes[i][1]);
+        Arrays.sort(classes, Comparator.comparingInt((int[] t) -> t[0]));
+
+        PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+        minHeap.add(classes[0][1]);
+
+        for (int i=1; i<N; i++) {
+
+            if (classes[i][0] >= minHeap.peek()) {
+                minHeap.poll();
+            }
+            minHeap.add(classes[i][1]);
         }
-        System.out.println(pq.size());
+
+        System.out.println(minHeap.size());
+    }
+
+    private static void inputData() throws IOException {
+
+        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+
+        N = Integer.parseInt(bf.readLine());
+        classes = new int[N][2];
+        for (int i=0; i<N; i++) {
+            StringTokenizer st = new StringTokenizer(bf.readLine());
+            for(int j=0; j<2; j++) {
+                classes[i][j] = Integer.parseInt(st.nextToken());
+            }
+        }
     }
 }
