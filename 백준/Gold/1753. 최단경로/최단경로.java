@@ -51,28 +51,26 @@ public class Main {
     public static void dijkstra(int start) {
         PriorityQueue<Node> queue = new PriorityQueue<Node>(new Comparator<Node>() {	
         @Override
-            public int compare(Node o1, Node o2) {
-                return o1.value - o2.value;
+        public int compare(Node o1, Node o2) {
+            return o1.value - o2.value;
 	    	}
 		});
         
         queue.add(new Node(start,0));
         dist[start] = 0;
-        boolean[] check = new boolean[V + 1];
         
         while(!queue.isEmpty()) {
             Node now = queue.poll();
             int cur = now.idx;
             
-            if(!check[cur]){
-	          check[cur] = true;
+
                 for (Node node : graph.get(cur)) {
-                    if(!check[node.idx] && dist[node.idx] > dist[cur] + node.value){
+                    if( dist[node.idx] > dist[cur] + node.value){
                         dist[node.idx] = dist[cur] + node.value;
                         queue.add(new Node(node.idx, dist[node.idx]));
                     }
                 }
-            }
+            
     	  }
     }
 }
